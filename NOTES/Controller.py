@@ -1,19 +1,21 @@
 from bisect import insort
+import datetime
 #import User_interface as ui
 import Logger as log
-#import Metod as met
+import Metod as met
 from os import system
 
 
 
 def start_Notes():
 
-    start_text_log = 'Старт приложения заметки'
+    start_text_log = '\n\nСтарт приложения заметки'
     log.log_data(start_text_log)
     new_start=True
     
 
     while True:
+        dat = datetime.tzinfo
         
         # Вывод меню в консоль
         system ('cls')
@@ -25,7 +27,8 @@ def start_Notes():
         2 - Поиск заметки
         3 - Редактировать заметку
         4 - Удалить заметку
-        5 - Выход из приложения\n
+        5 - Выход из приложения
+    
         Введите число => '''
             
         working_mode=input(welcome_text)
@@ -37,14 +40,14 @@ def start_Notes():
             system ('cls')
             print ('Вывод заметок в консоль')
             log.log_data('Пользователь выбрал пункт меню вывод заметок в консоль')
-            #met.output_data_console_menu()
+            met.output_notes()
             
         
         elif working_mode=='1': # Добавление заметок 
             system ('cls')
             print ('Добавить заметку')
             log.log_data('Пользователь выбрал пункт меню добавить заметку')
-            #met.add_data_menu()
+            met.add_data_notice()
             
         
         elif working_mode=='2': # Поиск заметок

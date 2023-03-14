@@ -1,9 +1,10 @@
 from datetime import datetime
+import File_links as fl
 
 
 def log_data(text_log):
 
-    folder = r'C:\Users\SBB2-Ермилов Артём\YandexDisk-artyomermiloff\GeegBrains\Programming\Python\Homework\PO\NOTES\LogNotes.txt'
+    folder = fl.file_links('file_logg')
 
 
     with open( folder, 'a+', encoding='UTF-8') as file:
