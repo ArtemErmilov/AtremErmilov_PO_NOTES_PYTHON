@@ -38,8 +38,8 @@ def start_Notes():
 
         if working_mode=='0': # Вывод заметок в консоль.
             system ('cls')
-            print ('Вывод заметок в консоль')
-            log.log_data('Пользователь выбрал пункт меню вывод заметок в консоль')
+            print ('Вывод всех заметок в консоль')
+            log.log_data('Пользователь выбрал пункт меню вывод всех заметок в консоль')
             met.output_notes()
             
         
@@ -54,7 +54,7 @@ def start_Notes():
             system ('cls')
             print ('Поиск заметок')
             log.log_data('Пользователь выбрал пункт меню поиск заметки')
-            #met.search_data_menu()
+            met.note_search()
             
         
         elif working_mode=='3': # Редактирование заметок
