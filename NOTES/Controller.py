@@ -61,7 +61,7 @@ def start_Notes():
             system ('cls')
             print ('Редактирование заметки')
             log.log_data('Пользователь выбрал пункт меню редактировать заметку')
-            #met.del_data_menu()
+            met.editing_notes()
             
 
         elif working_mode=='4': # Удаление заметок

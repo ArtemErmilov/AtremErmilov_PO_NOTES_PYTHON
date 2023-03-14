@@ -10,7 +10,7 @@ from datetime import datetime
 
 def write_json (data_write, path_file_json): 
     """
-    Запись данных в файл формата json
+    Чтение и запись данных в файл формата json
     data_write - данные, которые необходимо записать в json.
     path_file_json - путь к файлу json
     """
@@ -37,6 +37,17 @@ def reading_json(path_file_json):
         print('Файла не существует')
         data = []
     return data
+
+
+def wr_json (data, path_file_json): 
+    """
+    Только запись данных в файл формата json
+    data_write - данные, которые необходимо записать в json.
+    path_file_json - путь к файлу json
+    """
+    
+    with open(path_file_json, 'w', encoding='utf8') as file: # запись данных в json файл
+        json.dump(data, file, ensure_ascii=False, indent=4,separators=(', ', ': '))
 
 
 
@@ -123,16 +134,17 @@ def note_search():
         
     while(True):
 
-        working_mode = str(input ('\nПоиск заметки по:\n1 - По ID\n2 - По названию\nВведите число => '))
+        working_mode = str(input ('\nПоиск заметки по:\n1 - По ID\n2 - По названию\n3-Выход из подменю поиск\nВведите число => '))
 
         logg.log_data(f'Пользователь ввёл: {working_mode}') # логирование
 
-        data = reading_json (file_json) # Чтение данных из json файла
 
         temp_bool = False # Временная переменная
 
         if (working_mode == '1'): # Поиск по ID
-            
+
+            logg.log_data(f'Пользователь выбрал поиск по ID') # логирование
+
             search_ID = str(ch.input_number('Введите ID для поиска: ')) # Ввод ID для поиска
 
             logg.log_data(f'Пользователь ввёл ID: {search_ID}') # логирование
@@ -153,6 +165,8 @@ def note_search():
 
         elif (working_mode == '2'): # Поиск по названию заметки
 
+            logg.log_data(f'Пользователь выбрал поиск по имени заметки') # логирование
+
             search_name = str(input ('Введите название заметки для поиска: ')) # Ввод название заметки для поиска
 
             logg.log_data(f'Пользователь ввёл название заметки: {search_name}') # логирование
@@ -169,5 +183,78 @@ def note_search():
             a = input ('Для выхода нажмите Enter') # Выход из подменю в основное меню
 
             break
+        elif (working_mode == '3'): # Выход из подменю поиск
+            logg.log_data(f'Пользователь выбрал выход из подменю поиск') # логирование
 
         else: continue
+
+def editing_notes():
+    """
+    Редактирование журнала заметок.
+    """
+
+    file_json=fl.file_links('file_json') # путь к файлу json
+
+    text_in_ID = 'Введите ID заметки для редактирования.\nДля выхода из подменю редактирования введите "e" и Enter.\nВедите данные: '
+
+    editing_ID,editing_notes_exit = ch.input_number_exit(text_in_ID) # ID заметки для редактирования 
+
+    editing_ID = str(editing_ID)
+
+    logg.log_data(f'Пользователь ввёл ID заметки для редактирования: {editing_ID}') # логирование
+
+    data = reading_json(file_json) # Получение данных из json
+
+    if (editing_notes_exit==False):
+        for d in data:
+            if (d['ID']==editing_ID):
+                while (True):
+                    
+                    text_working_mode ='Выберите что будете редактировать:\n1 - Название заметки\n2 - Саму заметку\n3 - Выход из меню редактирования\nВведите число:'
+                    working_mode = input(text_working_mode)# Выбор что будет редактироваться имя заметки или заметка
+                    logg.log_data(f'Пользователь ввёл : {working_mode}') # логирование
+
+                    if (working_mode=='1'): # Изменение названия заметки
+                        logg.log_data(f'Пользователь выбрал изменить название заметки') # логирование
+                        change_name = input('Введите новое название заметки: ') # Ввод нового имени заметки
+                        logg.log_data(f'Пользователь ввёл новое название заметки: {change_name}') # логирование
+                        
+                        entry = input ('Для сохранения изменённых данных введите Y + Enter. Если нет N и Enter.\n')
+                        if (entry == 'y'):
+                            logg.log_data(f'Пользователь сохранил изменение названия заметки') # логирование
+                            d['Name'] = change_name
+                            time = str(datetime.now()) # время изменения заметки
+                            d['Time'] = time  # время создание заметки
+                            wr_json (data, file_json)
+                            print(d)
+                        logg.log_data(f'Пользователь не сохранил изменение названия заметки') # логирование
+                        continue
+                        
+
+                    elif (working_mode=='2' ): # Изменение самой заметки
+                        logg.log_data(f'Пользователь выбрал изменить заметку') # логирование
+                        change_notice = input('Введите новую заметку: ') # Ввод новой заметки
+                        logg.log_data(f'Пользователь ввёл новую заметку заметки: {change_notice}') # логирование
+                        
+                        entry = input ('Для сохранения изменённых данных введите Y + Enter. Если нет N и Enter.\n')
+                        if (entry == 'y'):
+                            logg.log_data(f'Пользователь сохранил изменение в заметки') # логирование
+                            d['Notice'] = change_notice # Новая заметка
+                            time = str(datetime.now()) # время изменения заметки
+                            d['Time'] = time # время изменения заметки
+                            wr_json (data, file_json)
+                            print(d)
+                        logg.log_data(f'Пользователь не сохранил изменение в заметки') # логирование
+                        continue
+
+                    elif (working_mode=='3' ): # Выход из подменю редактирования
+                        break
+
+                    else : continue
+
+    logg.log_data(f'Пользователь выбрал выход из подменю редактирования') # логирование
+
+def remove_notes ():
+    return
+                        
+
