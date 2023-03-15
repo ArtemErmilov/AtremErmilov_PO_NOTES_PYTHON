@@ -86,7 +86,7 @@ def add_data_notice(): #Создание новой заметки
 
             logg.log_data('Пользователь выбрал сохранение заметки') # логирование
 
-            id = id_def.new_id('ID заметки: ') # ID заметки
+            id = id_def.s_new_id('ID заметки: ') # ID заметки
             
             person_dict = {'ID': id, 'Time': time, 'Name': name, 'Notice':notice} # структура json файла
         
@@ -190,7 +190,7 @@ def note_search():
 
 def editing_notes():
     """
-    Редактирование журнала заметок.
+    Метод редактирование заметки в базе данных.
     """
 
     file_json=fl.file_links('file_json') # путь к файлу json
@@ -204,13 +204,17 @@ def editing_notes():
     logg.log_data(f'Пользователь ввёл ID заметки для редактирования: {editing_ID}') # логирование
 
     data = reading_json(file_json) # Получение данных из json
+    
+    temp_bool = False
 
     if (editing_notes_exit==False):
         for d in data:
             if (d['ID']==editing_ID):
+                temp_bool = True
+                
                 while (True):
-                    
-                    text_working_mode ='Выберите что будете редактировать:\n1 - Название заметки\n2 - Саму заметку\n3 - Выход из меню редактирования\nВведите число:'
+                    print(d)
+                    text_working_mode ='Выберите действия:\n1 - Редактирование названия заметки\n2 - Редактирование заметки\n3 - Выход из меню редактирования\nВведите число:'
                     working_mode = input(text_working_mode)# Выбор что будет редактироваться имя заметки или заметка
                     logg.log_data(f'Пользователь ввёл : {working_mode}') # логирование
 
@@ -220,14 +224,15 @@ def editing_notes():
                         logg.log_data(f'Пользователь ввёл новое название заметки: {change_name}') # логирование
                         
                         entry = input ('Для сохранения изменённых данных введите Y + Enter. Если нет N и Enter.\n')
-                        if (entry == 'y'):
+                        if (entry == 'y' or entry == 'Y'):
                             logg.log_data(f'Пользователь сохранил изменение названия заметки') # логирование
                             d['Name'] = change_name
                             time = str(datetime.now()) # время изменения заметки
                             d['Time'] = time  # время создание заметки
                             wr_json (data, file_json)
-                            print(d)
-                        logg.log_data(f'Пользователь не сохранил изменение названия заметки') # логирование
+                           
+                        else:
+                            logg.log_data(f'Пользователь не сохранил изменение названия заметки') # логирование
                         continue
                         
 
@@ -237,24 +242,78 @@ def editing_notes():
                         logg.log_data(f'Пользователь ввёл новую заметку заметки: {change_notice}') # логирование
                         
                         entry = input ('Для сохранения изменённых данных введите Y + Enter. Если нет N и Enter.\n')
-                        if (entry == 'y'):
+                        if (entry == 'y' or entry == 'Y'):
                             logg.log_data(f'Пользователь сохранил изменение в заметки') # логирование
                             d['Notice'] = change_notice # Новая заметка
                             time = str(datetime.now()) # время изменения заметки
                             d['Time'] = time # время изменения заметки
                             wr_json (data, file_json)
-                            print(d)
-                        logg.log_data(f'Пользователь не сохранил изменение в заметки') # логирование
+                            
+                        else:
+                            logg.log_data(f'Пользователь не сохранил изменение в заметки') # логирование
                         continue
 
                     elif (working_mode=='3' ): # Выход из подменю редактирования
                         break
 
                     else : continue
+        if (temp_bool==False): # Вывод предупредительных сообщений, если ID не существует 
+            print (f'Заметки с ID {editing_ID} не найдена')
+            logg.log_data(f'Заметки с ID {editing_ID} не найдена') # логирование
+            a = input ('Для продолжения нажмите Enter')
+                
 
     logg.log_data(f'Пользователь выбрал выход из подменю редактирования') # логирование
 
 def remove_notes ():
-    return
-                        
+    """
+    Метод удаления заметки из базы данных.
+    """
+    file_json=fl.file_links('file_json') # путь к файлу json
 
+    text_in_ID = 'Введите ID заметки, которую необходимо удалить.\nДля выхода из подменю редактирования введите "e" и Enter.\nВедите данные: '
+    
+    editing_ID,editing_notes_exit = ch.input_number_exit(text_in_ID) # ID заметки для удаления                     
+
+    editing_ID = str(editing_ID) # Преобразование введёны данных в формат str
+
+    logg.log_data(f'Пользователь ввёл ID заметки для удаления: {editing_ID}') # логирование
+
+    data = reading_json(file_json) # Получение данных из json
+
+    new_data = [] # Новый словарь, куда будут записываться данные из старого без удаляемого словаря
+
+    temp_bool = False
+
+    if (editing_notes_exit == False): # Удаление заметки
+        logg.log_data(f'Пользователь выбрал удаление заметки') # логирование
+
+        for d in data: # Поиск заметки по ID
+            if (d['ID']==editing_ID): # Нахождение заметки и вывод её в консоль
+                
+                temp_bool = True
+
+                print(d) # Вывод удаляемой заметки в консоль
+                
+            else: new_data.append(d)
+        
+        if ( temp_bool == True): # Если ID существует, то выполняются действия подтверждения и удаления
+        
+            del_notes_EN = input ('Для подтверждения удаления введите Y + Enter. Для отмены любой символ и, или Enter.\n')
+            
+            if (del_notes_EN == 'y' or del_notes_EN=='Y'): # Удаление заметки
+
+                logg.log_data(f'Пользователь подтвердил удаление заметки') # логирование
+
+                wr_json(new_data,file_json) # Запись изменённого журнала в json файл
+
+            else : logg.log_data(f'Пользователь отменил удаление заметки') # логирование
+        
+        else:
+            print (f'Заметки с ID = {editing_ID} не найдена')
+            logg.log_data(f'Заметки с ID = {editing_ID} не найдена') # логирование
+            a = input ('Для продолжения нажмите Enter')
+        
+    else: logg.log_data(f'Пользователь вышел из подменю удалить заметку') # логирование
+
+                
